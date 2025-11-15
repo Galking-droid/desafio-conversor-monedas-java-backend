@@ -3,18 +3,31 @@ package com.aluracursos.conversor.servicio;
 import com.aluracursos.conversor.modelos.MonedaRecord;
 import com.google.gson.Gson;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Properties;
 
 public class ConsultaApi {
-    private final String API_KEI = "ab702fbaeed5c032e6ff8823";
+    private String API_KEY;
     private final String BASE_URL = "https://v6.exchangerate-api.com/v6/";
 
+    public ConsultaApi() {
+        try {
+            Properties props = new Properties();
+            props.load(new FileInputStream("config.properties"));
+            this.API_KEY = props.getProperty("api.key");
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo de configuración: " + e.getMessage());
+            // Manejar el error apropiadamente, por ejemplo, lanzando una excepción
+        }
+    }
+
     public MonedaRecord buscarTasas(String monedaBase){
-        URI direccion = URI.create(BASE_URL + API_KEI + "/latest/" + monedaBase);
+        URI direccion = URI.create(BASE_URL + API_KEY + "/latest/" + monedaBase);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(direccion)
